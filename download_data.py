@@ -45,9 +45,15 @@ def main():
             #get the URL for file download
             resource_uri_rawdata_url="v1/datafiles/"+str(raw_file_id)+"/DownloadUrl"
             headers_rawdata_url=generate_headers(args,'GET',resource_uri_rawdata_url)
-            rawdata_url=requests.get('/'.join([args.baseUrl,resource_uri_rawdata_url]),headers=headers_rawdata_url).json()
-            raw_data_url_string=rawdata_url['DownloadURL']
-            
+            rawdata_url=requests.get('/'.join([args.baseUrl,resource_uri_rawdata_url]),headers=headers_rawdata_url)
+            try:
+                rawdata_url=rawdata_url.json()
+                raw_data_url_string=rawdata_url['DownloadURL']
+            except:
+                print("failed:")
+                print(rawdata_url.text)
+                print(str(raw_file_id)) 
+                continue 
             #download the gt3x file
             unquoted_url_string=urllib.parse.unquote(raw_data_url_string)
             filename=unquoted_url_string.split("filename=")[-1].strip("\"")
