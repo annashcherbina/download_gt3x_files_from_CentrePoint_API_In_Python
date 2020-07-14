@@ -2,7 +2,7 @@ import argparse
 import os
 import requests
 import urllib.parse
-from .utils import * 
+from utils import * 
 
 def parse_args():
     args=argparse.ArgumentParser(description="Download raw Actigraph gt3x files from CentrePoint")
@@ -47,15 +47,22 @@ def main():
             headers_rawdata_url=generate_headers(args,'GET',resource_uri_rawdata_url)
             rawdata_url=requests.get('/'.join([args.baseUrl,resource_uri_rawdata_url]),headers=headers_rawdata_url).json()
             raw_data_url_string=rawdata_url['DownloadURL']
-            print(raw_data_url_string)
+            
             #download the gt3x file
             unquoted_url_string=urllib.parse.unquote(raw_data_url_string)
             filename=unquoted_url_string.split("filename=")[-1].strip("\"")
-            print(filename)
+            
             rawfile_request=requests.get(raw_data_url_string,allow_redirects=True)
             output_file='/'.join([args.dirToStoreFiles,subject_identifier_for_researchers,filename])
-            open(output_file,'wb').write(rawfile_request.content)
-            print("finished downloading:"+str(output_file))
+            
+            if (args.newFilesOnly is True) and (os.path.exists(output_file)):
+                #the file already exists, skip it
+                print("already exists:"+str(output_file))
+                continue
+            else:
+                #write the .gt3x file to disk
+                open(output_file,'wb').write(rawfile_request.content)
+                print("finished downloading:"+str(output_file))
             
 if __name__=="__main__":
     main()
