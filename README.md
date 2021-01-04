@@ -1,3 +1,6 @@
+These scripts utilize the [CentrePoint V2 API](https://github.com/actigraph/StudyAdminAPIDocumentation) do download raw Actigraph .gt3x files
+
+
 ### Step 1: Identify the ID of your study of interest
 
 ```
